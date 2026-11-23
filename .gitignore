@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+# Raw downloads are large and their redistribution terms are unclear:
+# keep them local, publish the code that fetches them.
+data/raw/
+data/processed/*.csv
+!data/processed/.gitkeep
+results/main/panel.csv

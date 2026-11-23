@@ -1,0 +1,79 @@
+# ধাপে ধাপে চালানোর গাইড (বাংলা)
+
+মোট সময় লাগবে ২–৩ ঘণ্টা। এর বেশিরভাগটাই ডাউনলোডের জন্য অপেক্ষা, তোমাকে বসে থাকতে হবে না।
+
+## ০. একবারের সেটআপ
+
+1. **Python 3.10 বা নতুন ভার্সন** ইনস্টল করো (python.org থেকে)। Windows-এ ইনস্টল করার সময় "Add to PATH"-এ টিক দিও।
+2. **Git** ইনস্টল করো (git-scm.com থেকে)।
+3. টার্মিনাল খুলে এই কমান্ডগুলো চালাও (Windows-এ PowerShell):
+
+```bash
+git clone https://github.com/barshon-ex/cold-chain-in-the-dark
+cd cold-chain-in-the-dark
+python -m venv .venv
+.venv\Scripts\activate          # Mac/Linux হলে: source .venv/bin/activate
+pip install -r requirements.txt
+pytest                          # 20টা টেস্ট pass করা উচিত
+```
+
+## ১. যা সাথে সাথে চলে (আসল ডেটা রিপোতেই আছে)
+
+```bash
+python scripts/05_zone_inequality.py        # লোডশেডিংয়ের বোঝা কোন জোন বইছে
+python scripts/04_run_analysis.py --synthetic   # নকল ডেটা দিয়ে পুরো পাইপলাইনের ডেমো
+streamlit run app/dashboard.py              # ব্রাউজারে ড্যাশবোর্ড খুলবে
+```
+
+## ২. হামের জেলাভিত্তিক ডেটা (DGHS)
+
+```bash
+python scripts/01_fetch_dghs.py
+```
+
+- এতে ৩০–৬০ মিনিট লাগবে। মাঝপথে বন্ধ হয়ে গেলে আবার চালালেই চলবে, যেগুলো আগে নামানো হয়ে গেছে সেগুলো বাদ দিয়ে বাকিটা নামাবে।
+- কোনো জেলার নাম চিনতে না পারলে `Unknown district name: ...` এরর আসবে। তখন `src/ccd/names.py` ফাইলের `_ALIASES`-এ বানানটা যোগ করে দিও।
+
+## ৩. BPDB লোডশেডিং ডেটা
+
+```bash
+python scripts/02_fetch_bpdb.py
+```
+
+- কাজ শেষে `data/processed/bpdb_parse_failures.csv` ফাইলটা খুলে দেখো। কয়েকটা PDF পার্স না হওয়াটা স্বাভাবিক।
+- BPDB সাইট কোনো কারণে না খুললে এই ধাপ বাদ দিতে পারো। মূল বিশ্লেষণ এটা ছাড়াও চলবে।
+
+## ৪. স্যাটেলাইট ডেটা (Google Earth Engine)
+
+1. https://code.earthengine.google.com এ ঢোকো আর তোমার Google অ্যাকাউন্ট দিয়ে লগইন করো। প্রথমবার ঢুকলে একটা Cloud project রেজিস্টার করতে বলবে। সেখানে **"Noncommercial / research"** বেছে নিও, এর জন্য টাকা লাগে না।
+2. `gee/export_district_ntl_temperature.js` ফাইলের পুরো লেখাটা কপি করে এডিটরে পেস্ট করো, তারপর **Run** চাপো।
+3. ডান পাশের **Tasks** ট্যাবে মাসভিত্তিক ৯–১০টা এক্সপোর্ট দেখাবে। প্রতিটার পাশে **RUN** চাপো।
+4. সব শেষ হলে Google Drive-এর `cold_chain_in_the_dark` ফোল্ডার থেকে সব CSV ফাইল নামাও। ফাইলগুলো রাখবে রিপোর `data/raw/gee/` ফোল্ডারে।
+5. তারপর চালাও:
+
+```bash
+python scripts/03_prepare_ntl.py
+```
+
+**সতর্কতা:** NASA-র Black Marble ডেটা Earth Engine-এ আসতে কয়েক সপ্তাহ দেরি হতে পারে। শেষের দিকের মাসগুলোর ফাইল খালি এলে `START`/`END` তারিখ একটু কমিয়ে আবার চালাও।
+
+## ৫. মূল বিশ্লেষণ
+
+```bash
+python scripts/04_run_analysis.py
+streamlit run app/dashboard.py
+```
+
+রেজাল্ট জমা হবে `results/main/` ফোল্ডারে। আগে `SUMMARY.md` পড়ো, তারপর `docs/pre_analysis_plan.md` দেখে মিলিয়ে নাও রেজাল্টের মানে কী দাঁড়ায়।
+
+## রেজাল্ট কীভাবে পড়বে
+
+- **Rate ratio 1.20 মানে:** যে জেলায় লোডশেডিং গড়ের চেয়ে ১ স্ট্যান্ডার্ড ডেভিয়েশন বেশি ছিল, সেখানে ক্যাম্পেইনের পরে আপেক্ষিকভাবে ২০% বেশি কেস হয়েছে।
+- **Horse race:** এই মডেলে দুটো আলাদা সংখ্যা আসে। ক্যাম্পেইনের সময়ের লোডশেডিংয়ের সংখ্যাটা ১-এর বেশি, আর ক্যাম্পেইনের আগের লোডশেডিংয়ের সংখ্যাটা প্রায় ১ হলে তবেই "কোল্ড চেইন" ব্যাখ্যাটা টেকে।
+- **CI-তে ১ থাকলে:** তার মানে কোনো সম্পর্ক ধরা পড়েনি। এটাও একটা বৈধ রেজাল্ট, লুকানোর কিছু নেই।
+- **কখনো লিখবে না "লোডশেডিং হামের কারণ"।** লিখবে "সম্পর্ক পাওয়া গেছে" (associated with)।
+
+## ডেটা নামানোর পর করণীয়
+
+1. `src/ccd/config.py` ফাইলে `CAMPAIGN_END` তারিখটা DGHS-এর প্রেস রিলিজের সাথে মিলিয়ে নাও। বদলালে `docs/pre_analysis_plan.md`-এর Change log-এ কারণসহ লিখে রাখো।
+2. রেজাল্ট নিয়ে ৪–৬ পৃষ্ঠার একটা রিপোর্ট লেখো আর README-তে লিংক দাও।

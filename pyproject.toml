@@ -1,0 +1,12 @@
+[project]
+name = "ccd"
+version = "0.1.0"
+description = "Cold Chain in the Dark: did 2026 power cuts weaken Bangladesh's measles vaccination campaign?"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
