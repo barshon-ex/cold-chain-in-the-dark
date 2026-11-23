@@ -63,6 +63,7 @@ _ALIASES: dict[str, str] = {
     "laxmipur": "Lakshmipur", "lakshmipur": "Lakshmipur",
     "rangamati hill": "Rangamati", "rangamati": "Rangamati",
     "narshingdi": "Narsingdi", "panchagar": "Panchagarh",
+    "gopalgonj": "Gopalganj", "gopalgonjdistrict": "Gopalganj",
 }
 
 _KEY_TO_CANON = {re.sub(r"[^a-z]", "", k.lower()): v for k, v in _ALIASES.items()}

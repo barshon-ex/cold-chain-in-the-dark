@@ -8,6 +8,9 @@
 | DGHS platform API usage (endpoint, parameters, known quirks) | kathsherratt/measles-bgd, `R/data/01-fetch-dashboard.R` | MIT | Re-implemented in Python in `src/ccd/dghs.py` |
 
 Data fetched by the scripts at run time (not redistributed here):
+annual district measles cases 2017-2023 from
+[abubokkorshiddik/District-Level-Measles-Outbreak-Bangladesh](https://github.com/abubokkorshiddik/District-Level-Measles-Outbreak-Bangladesh)
+(pinned commit cf393b8; no license; source of the case counts not documented there);
 DGHS measles platform (measles.dghs.gov.bd); BPDB daily-generation archive
 (misc.bpdb.gov.bd); NASA Black Marble VNP46A2 and ECMWF ERA5-Land via Google
 Earth Engine; geoBoundaries v6 ADM2 (CC BY 4.0).

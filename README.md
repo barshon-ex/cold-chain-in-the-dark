@@ -34,8 +34,9 @@ search in November 2026 for "vaccine cold chain bangladesh" and for
 | `scripts/03_prepare_ntl.py` | Combines the Earth Engine exports | ready to run |
 | `scripts/04_run_analysis.py` | Panel build, difference-in-differences, event study, placebo, robustness | **tested on synthetic data** |
 | `scripts/05_zone_inequality.py` | Who carried the load shedding, by BPDB zone | **run on real data**, see below |
+| `scripts/06_historical_pretrends.py` | Parallel-trends check on 2017-2023 district measles data | **run on real data** (zone proxy), see below |
 | `app/dashboard.py` | Streamlit dashboard | working |
-| `tests/` | 20 tests, including recovery of a planted effect | passing |
+| `tests/` | 23 tests, including recovery of a planted effect | passing |
 | `docs/pre_analysis_plan.md` | Hypotheses, design and threats, **written before seeing the outcome data** | done |
 
 ## First real result: who carried the load shedding
@@ -53,6 +54,24 @@ From 78 daily BPDB/NLDC reports (4 September - 21 November 2026), in
 These numbers show that the burden of the power cuts was unequal. That is the
 reason to measure outages district by district before asking what they did to
 the vaccines.
+
+## Parallel-trends check with earlier years
+
+The DGHS platform starts only ten days before the campaign, so 2026 alone
+cannot show whether high- and low-outage districts were on parallel trends.
+`scripts/06_historical_pretrends.py` uses annual district measles counts for
+2017-2023 to ask whether the districts that lost more power in 2026 already
+followed a different measles trend before 2026.
+
+Until the night-light exposure is downloaded, exposure is proxied by each
+district's BPDB zone burden ratio. The first run gives a rate ratio of
+**0.91 per year per +1 SD** (95% CI 0.83-1.00, p = 0.06). This is
+borderline: higher-exposure districts were trending slightly *down* relative
+to the rest. If that trend continued, the 2026 estimate would be biased
+*against* the cold-chain hypothesis, so a main estimate above 1 would be
+conservative. Details are in `results/historical_pretrends/SUMMARY.md`.
+
+![historical pre-trends](results/historical_pretrends/historical_pretrends.png)
 
 ## Study design (short version)
 
@@ -83,10 +102,11 @@ SYNTHETIC).
 git clone https://github.com/<you>/cold-chain-in-the-dark && cd cold-chain-in-the-dark
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-pytest                                                  # 20 tests
+pytest                                                  # 23 tests
 
 python scripts/05_zone_inequality.py                    # real data, included
 python scripts/04_run_analysis.py --synthetic           # pipeline demo
+python scripts/06_historical_pretrends.py               # pre-2026 parallel trends
 
 # the real study
 python scripts/01_fetch_dghs.py                         # ~30-60 min
@@ -111,7 +131,7 @@ There is a step-by-step guide in Bengali in [`docs/SETUP_bn.md`](docs/SETUP_bn.m
   pixels are cloud-free are dropped, and the number of usable nights is
   reported for each district.
 * The DGHS platform starts on 10 April, so there is only a short pre-campaign
-  period for checking trends.
+  period for checking trends in 2026; earlier years are used instead (see above).
 * Health facilities may have had generators or solar-powered fridges. If they
   did, any effect would be smaller and harder to detect.
 

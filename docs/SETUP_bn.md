@@ -14,7 +14,7 @@ cd cold-chain-in-the-dark
 python -m venv .venv
 .venv\Scripts\activate          # Mac/Linux হলে: source .venv/bin/activate
 pip install -r requirements.txt
-pytest                          # 20টা টেস্ট pass করা উচিত
+pytest                          # 23টা টেস্ট pass করা উচিত
 ```
 
 ## ১. যা সাথে সাথে চলে (আসল ডেটা রিপোতেই আছে)
@@ -24,6 +24,14 @@ python scripts/05_zone_inequality.py        # লোডশেডিংয়ে�
 python scripts/04_run_analysis.py --synthetic   # নকল ডেটা দিয়ে পুরো পাইপলাইনের ডেমো
 streamlit run app/dashboard.py              # ব্রাউজারে ড্যাশবোর্ড খুলবে
 ```
+
+আগের বছরগুলোর ডেটা দিয়ে parallel trends যাচাই করতে চালাও:
+
+```bash
+python scripts/06_historical_pretrends.py
+```
+
+এটা ২০১৭ থেকে ২০২৩ সালের জেলাভিত্তিক হামের ডেটা দেখে বলে দেয়, যে জেলাগুলোতে ২০২৬-এ বেশি লোডশেডিং হয়েছে, সেগুলোর হামের প্রবণতা আগে থেকেই অন্য জেলাগুলোর চেয়ে আলাদা ছিল কিনা। ধাপ ৫ শেষ হলে এটা আবার চালাবে, তখন জোনের আনুমানিক হিসাবের বদলে আসল স্যাটেলাইট ডেটা ব্যবহার হবে।
 
 ## ২. হামের জেলাভিত্তিক ডেটা (DGHS)
 

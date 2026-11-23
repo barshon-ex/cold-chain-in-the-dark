@@ -1,0 +1,2 @@
+model,coef,se,rate_ratio_per_year,rr_low,rr_high,p,districts,years,n
+"Linear differential trend, per +1 SD exposure per year",-0.09323378189411383,0.04929669290566389,0.9109805046519698,0.8270788035968539,1.0033934810648002,0.05858715962937152,64,2017-2023,448

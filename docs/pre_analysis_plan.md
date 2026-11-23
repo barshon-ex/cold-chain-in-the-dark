@@ -97,4 +97,11 @@ cold-chain failure.
 
 ## Change log
 
-_(empty)_
+* **24 November 2026: added a historical parallel-trends check** (`scripts/06_historical_pretrends.py`).
+  The reason was a discussion with Prof. Enrico Rettore (University of Padova), who pointed out that the
+  design identifies the differential effect of the campaign only under parallel trends. The 2026
+  pre-period is about ten days long, so the check uses annual district counts for 2017-2023:
+  `cases_dy ~ district FE + year FE + exposure_d x (year - mean)`, Poisson, SE clustered by district,
+  plus an exposure x year event study. This was added before any 2026 district outcome data were
+  downloaded. The first run used the BPDB zone burden ratio as a proxy exposure; the final run will
+  use the campaign-window night-light exposure.
