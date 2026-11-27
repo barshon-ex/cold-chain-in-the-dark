@@ -36,7 +36,7 @@ search in November 2026 for "vaccine cold chain bangladesh" and for
 | `scripts/05_zone_inequality.py` | Who carried the load shedding, by BPDB zone | **run on real data**, see below |
 | `scripts/06_historical_pretrends.py` | Parallel-trends check on 2017-2023 district measles data | **run on real data** (zone proxy), see below |
 | `app/dashboard.py` | Streamlit dashboard | working |
-| `tests/` | 23 tests, including recovery of a planted effect | passing |
+| `tests/` | 24 tests, including recovery of a planted effect | passing |
 | `docs/pre_analysis_plan.md` | Hypotheses, design and threats, **written before seeing the outcome data** | done |
 
 ## First real result: who carried the load shedding
@@ -85,6 +85,9 @@ conservative. Details are in `results/historical_pretrends/SUMMARY.md`.
   `cases ~ district FE + week FE + post x exposure + post x pre-campaign attack rate`,
   with standard errors clustered by district. The coefficient is reported as a
   rate ratio per +1 SD of outage.
+* **Alternative estimate:** the same model with district-specific linear
+  trends, as suggested by Prof. Enrico Rettore (University of Padova) in
+  view of the borderline historical pre-trend.
 * **Checks:** an event study for pre-trends; a placebo that uses outages
   *before* the campaign; a "horse race" with both windows in one model; a
   negative binomial fit; deep-outage and hot-outage variants; BPDB zone data
@@ -102,13 +105,13 @@ SYNTHETIC).
 git clone https://github.com/<you>/cold-chain-in-the-dark && cd cold-chain-in-the-dark
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-pytest                                                  # 23 tests
+pytest                                                  # 24 tests
 
 python scripts/05_zone_inequality.py                    # real data, included
 python scripts/04_run_analysis.py --synthetic           # pipeline demo
 python scripts/06_historical_pretrends.py               # pre-2026 parallel trends
 
-# the real study
+# the real study (or simply: python scripts/run_all.py once the GEE CSVs are in data/raw/gee/)
 python scripts/01_fetch_dghs.py                         # ~30-60 min
 python scripts/02_fetch_bpdb.py
 #   run gee/export_district_ntl_temperature.js in code.earthengine.google.com,

@@ -52,6 +52,7 @@ P.to_csv(out / "panel.csv", index=False)
 # ------------------------------------------------------------------ models
 rows = [
     models.did(P, label="Main: campaign-window outage (Poisson FE, clustered SE)"),
+    models.did(P, district_trends=True, label="Alternative: + district-specific linear trends"),
     models.did(P, controls=False, label="No susceptible-depletion control"),
     models.did(P, exposure="deep_outage_campaign_z", label="Deep-outage nights (<70% of baseline)"),
     models.did(P, exposure="hot_outage_campaign_z", label="Deep outage on hot days (>35 C)"),
@@ -136,6 +137,7 @@ if val is not None and len(val):
 # ------------------------------------------------------------------ summary
 main = est.iloc[0]
 plac = est[est["model"].str.startswith("PLACEBO")].iloc[0]
+tr = est[est["model"].str.startswith("Alternative: + district")].iloc[0]
 hr_c = est[est["model"] == "Horse race: campaign-window term"].iloc[0]
 hr_p = est[est["model"] == "Horse race: pre-campaign term"].iloc[0]
 lines = [
@@ -147,6 +149,8 @@ lines = [
     f"({P['week'].min():%d %b} to {P['week'].max():%d %b %Y}), {int(P['suspected'].sum()):,} suspected cases.",
     f"- Main estimate: rate ratio **{main.rate_ratio:.2f}** (95% CI {main.rr_low:.2f}-{main.rr_high:.2f}, "
     f"p = {main.p:.3f}) per +1 SD of campaign-window outage.",
+    f"- Alternative with district-specific linear trends: **{tr.rate_ratio:.2f}** "
+    f"({tr.rr_low:.2f}-{tr.rr_high:.2f}, p = {tr.p:.3f}).",
     f"- Placebo (outage before the campaign): {plac.rate_ratio:.2f} ({plac.rr_low:.2f}-{plac.rr_high:.2f}). "
     "Outages before and during the campaign are correlated (both track rurality), so the placebo alone "
     "cannot separate the stories.",

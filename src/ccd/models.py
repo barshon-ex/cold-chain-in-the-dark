@@ -43,10 +43,22 @@ def _row(res, term: str, label: str) -> dict:
 
 
 def did(panel: pd.DataFrame, exposure: str = "outage_campaign_z", outcome: str = "suspected",
-        controls: bool = True, family=None, label: str | None = None) -> dict:
+        controls: bool = True, family=None, label: str | None = None,
+        district_trends: bool = False) -> dict:
+    """DiD rate ratio. district_trends=True adds a separate linear time trend
+    for every district (suggested by Prof. E. Rettore as an alternative to the
+    conservative main estimate, given the borderline 2017-2023 pre-trend)."""
     df = panel.dropna(subset=[exposure, outcome, "log_pop_u5"]).copy()
     df["post_x_exp"] = df["post"] * df[exposure]
     rhs = "post_x_exp + C(district) + C(week)"
+    if district_trends:
+        df["t"] = (df["week"] - df["week"].min()).dt.days / 7.0
+        df["t"] = df["t"] - df["t"].mean()
+        # One trend per district except the first: the week fixed effects
+        # already absorb the common national trend.
+        for i, d in enumerate(sorted(df["district"].unique())[1:]):
+            df[f"trend_{i}"] = (df["district"] == d) * df["t"]
+            rhs += f" + trend_{i}"
     if controls:
         df["post_x_pre"] = df["post"] * df["pre_attack_z"]
         rhs += " + post_x_pre"

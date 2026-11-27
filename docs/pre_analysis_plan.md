@@ -105,3 +105,7 @@ cold-chain failure.
   plus an exposure x year event study. This was added before any 2026 district outcome data were
   downloaded. The first run used the BPDB zone burden ratio as a proxy exposure; the final run will
   use the campaign-window night-light exposure.
+* **27 November 2026: added an alternative estimate with district-specific linear trends**
+  (`models.did(..., district_trends=True)`), on Prof. Rettore's advice: report the conservative main
+  estimate and, as an alternative, one that allows each district its own linear trend. Added before
+  any 2026 district outcome data were downloaded.

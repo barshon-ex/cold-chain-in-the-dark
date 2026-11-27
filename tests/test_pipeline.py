@@ -61,3 +61,9 @@ def test_did_null_when_no_effect():
 def test_event_study_has_reference_week():
     es = models.event_study(_panel(1.2))
     assert (es["term"] == "reference").sum() == 1
+
+
+def test_district_trends_variant_recovers_effect():
+    p = _panel(1.30)
+    est = models.did(p, district_trends=True)
+    assert est["rr_low"] > 1.0 and abs(est["rate_ratio"] - 1.30) < 0.12

@@ -14,7 +14,7 @@ cd cold-chain-in-the-dark
 python -m venv .venv
 .venv\Scripts\activate          # Mac/Linux হলে: source .venv/bin/activate
 pip install -r requirements.txt
-pytest                          # 23টা টেস্ট pass করা উচিত
+pytest                          # 24টা টেস্ট pass করা উচিত
 ```
 
 ## ১. যা সাথে সাথে চলে (আসল ডেটা রিপোতেই আছে)
@@ -64,6 +64,16 @@ python scripts/03_prepare_ntl.py
 ```
 
 **সতর্কতা:** NASA-র Black Marble ডেটা Earth Engine-এ আসতে কয়েক সপ্তাহ দেরি হতে পারে। শেষের দিকের মাসগুলোর ফাইল খালি এলে `START`/`END` তারিখ একটু কমিয়ে আবার চালাও।
+
+## এক কমান্ডে সব চালানো
+
+স্যাটেলাইট ডেটার CSV ফাইলগুলো (ধাপ ৪) `data\raw\gee\` ফোল্ডারে রাখার পর বাকি সব কাজ একটা কমান্ডেই হয়ে যায়:
+
+```bash
+python scripts/run_all.py
+```
+
+এটা হামের ডেটা নামায়, লোডশেডিংয়ের ডেটা নামায়, মূল বিশ্লেষণ চালায় (জেলাভিত্তিক trend-সহ), আর আগের বছরগুলো দিয়ে parallel trends যাচাই করে। একদম শেষে প্রফেসরকে পাঠানোর মতো সংখ্যাগুলো দেখায়।
 
 ## ৫. মূল বিশ্লেষণ
 
